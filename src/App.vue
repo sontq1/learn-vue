@@ -2,9 +2,18 @@
 	<div id="app">
 		<h1>list to do</h1>
 
-		<div class="float-right p-4">
-			<input type="text" v-model="newTodo" placeholder="add todo">
-			<button @click="addTodo()" class="btn btn-primary m-3" :disabled="!newTodo">add</button>
+		<div class="p-4 row">
+
+			<div class="col-5 text-left">
+				<input type="text" placeholder="Search">
+				<button class="btn btn-info m-3">search</button>
+			</div>
+
+			<div class="col-5 text-right">
+				<input type="text" v-model="newTodo" placeholder="add todo">
+				<button @click="addTodo()" class="btn btn-primary m-3" :disabled="!newTodo">add</button>
+			</div>
+
 
 		</div>
 
@@ -136,5 +145,9 @@
 		text-align: center;
 		color: #2c3e50;
 		margin-top: 60px;
+	}
+
+	table > thead > th{
+		align-items: stretch;
 	}
 </style>
