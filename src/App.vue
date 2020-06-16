@@ -3,74 +3,48 @@
 		<h1>list to do</h1>
 
 		<div class="p-4 row">
-
 			<div class="col-5 text-left">
-				<input type="text" placeholder="Search">
-				<button class="btn btn-info m-3">search</button>
+				<input type="text" placeholder="Search" v-model="keyword">
+<!--				<button class="btn btn-info m-3" @click="filter()">search</button>-->
 			</div>
 
 			<div class="col-5 text-right">
-				<input type="text" v-model="newTodo" placeholder="add todo">
-				<button @click="addTodo()" class="btn btn-primary m-3" :disabled="!newTodo">add</button>
+				<input type="text" v-model="newTodo" placeholder="add todo" @keyup.enter="addTodo()">
+				<button @click="addTodo()" class="btn btn-primary m-3" :disabled="!newTodo || !this.newTodo.trim()">add</button>
 			</div>
-
-
 		</div>
 
-		<table class="table table-bordered table-hover">
-			<thead>
-			<tr>
-				<th>STT</th>
-				<th>Name</th>
-				<th>Status</th>
-				<th>Action</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr v-for="(item, index) in todo" :key="index">
-				<td>{{ index + 1 }}</td>
-				<td class="text-left">
-					<span class="pl-3 text-capitalize" v-text="item.name" v-if="!item.isEdit"></span>
-					<input v-if="item.isEdit" v-model="editName">
-				</td>
-				<td>
-					<select v-if="item.isEdit" class="form-control" v-model="editStatus">
-						<option value="1">To Do</option>
-						<option value="2">Doing</option>
-						<option value="3">Done</option>
-					</select>
-					<div v-if="!item.isEdit">
-						<span v-if="item.status === 1" class="text-success">To Do</span>
-						<span v-if="item.status === 2" class="text-primary">Doing</span>
-						<span v-if="item.status === 3" class="text-secondary">Done</span>
-					</div>
-
-				</td>
-				<td>
-					<button class="mr-2 btn btn-info" @click="edit(item)" v-if="!item.isEdit">edit</button>
-					<button class="mr-2 btn btn-info" @click="save(item)" v-if="item.isEdit">save</button>
-					<button class="mr-2 btn btn-secondary" @click="cancel(item)" v-if="item.isEdit">cancel</button>
-					<!--					<button class="mr-2 btn btn-secondary" @click="done(item)" :disabled="item.status === 3">-->
-					<!--						done-->
-					<!--					</button>-->
-					<!--					<button class="mr-2 btn btn-primary" @click="doing(item)" :disabled="item.status === 2">-->
-					<!--						doing-->
-					<!--					</button>-->
-					<button class="btn btn-danger" @click="deleteTodo(item)" v-if="!item.isEdit">delete</button>
-				</td>
-			</tr>
-			</tbody>
-		</table>
+		<list-todo :todo="filterTodo"></list-todo>
 	</div>
 </template>
 
 <script>
-    import 'bootstrap'
-    import 'bootstrap/dist/css/bootstrap.min.css'
+    import 'bootstrap';
+    import 'bootstrap/dist/css/bootstrap.min.css';
+    import ListTodo from "./components/List";
 
     export default {
         name: 'App',
         lintOnSave: false,
+        components: {
+            ListTodo
+        },
+	    created() {
+            this.filterTodo = this.todo;
+	    },
+        watch: {
+            keyword: function () {
+                // console.log(this.keyword);
+                this.filterTodo = this.todo.filter((item) => {
+                    console.log('fake', item.name.toLowerCase().includes(this.keyword.toLowerCase()));
+                    return item.name.search(this.keyword) !== -1 || item.name.toLowerCase().includes(this.keyword.toLowerCase());
+                })
+	            console.log(this.filterTodo)
+            },
+	        // todo: function () {
+		    //     this.filterTodo = this.todo;
+            // }
+        },
         data() {
             return {
                 todo: [
@@ -91,15 +65,14 @@
                     },
                 ],
                 newTodo: '',
-                editName: '',
-                editStatus: 1,
-
+                keyword: '',
+	            filterTodo: this.todo,
             }
         },
         methods: {
             addTodo() {
                 console.log(this.newTodo);
-                if (!this.newTodo) {
+                if (!this.newTodo || !this.newTodo.trim()) {
                     return;
                 }
                 this.todo.push({
@@ -132,6 +105,9 @@
             },
             cancel(item) {
                 item.isEdit = false;
+            },
+            fetchTodo() {
+
             }
         }
     }
@@ -147,7 +123,7 @@
 		margin-top: 60px;
 	}
 
-	table > thead > th{
+	table > thead > th {
 		align-items: stretch;
 	}
 </style>
